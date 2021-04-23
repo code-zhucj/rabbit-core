@@ -56,7 +56,9 @@ public class NetworkEngine implements Module {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline().addLast(new NetworkEngineChannelHandler());
                     }
-                }).option(ChannelOption.SO_BACKLOG, 1024);
+                })
+                .option(ChannelOption.SO_BACKLOG, 1024)
+                .option(ChannelOption.SO_KEEPALIVE, true);
         log.trace("网络引擎初始化完成...");
     }
 
@@ -78,12 +80,11 @@ public class NetworkEngine implements Module {
         log.trace("网络引擎销毁完成...");
     }
 
-    private class NetworkEngineChannelHandler extends ChannelInboundHandlerAdapter {
+    private static class NetworkEngineChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
         @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            ByteBuf byteBuf = (ByteBuf) msg;
-            ctx.write("服务器接收到消息了" + byteBuf.toString(CharsetUtil.UTF_8));
+        public void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
+            ctx.write("服务器接收到消息:" + msg.toString(CharsetUtil.UTF_8));
         }
 
         @Override

@@ -48,14 +48,14 @@ public final class WorkerQueueThreadPoolExecutor extends ThreadPoolExecutor impl
     }
 
     @Override
-    public void process() {
+    public void execute() {
         execute(checkTask);
     }
 
     @Override
     public void start() {
         init();
-        process();
+        execute();
     }
 
     @Override

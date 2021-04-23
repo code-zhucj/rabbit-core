@@ -15,7 +15,7 @@ public interface Module {
     /**
      * 执行
      */
-    void process();
+    void execute();
 
     /**
      * 销毁
@@ -27,7 +27,7 @@ public interface Module {
      */
     default void start() {
         init();
-        process();
+        execute();
         destroy();
     }
 }

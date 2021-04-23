@@ -1,5 +1,8 @@
 package core.thread;
 
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedTransferQueue;
@@ -25,6 +28,7 @@ public final class ThreadManager {
     public final WorkerQueueThreadPoolExecutor workerQueue;
     public final ThreadPoolExecutor system;
     public final Map<String, ThreadPoolExecutor> pools = new ConcurrentHashMap<>();
+    public static final Logger log = LoggerFactory.getLogger(ThreadManager.class);
 
     public static final ThreadManager MANAGER = new ThreadManager();
 
@@ -94,7 +98,7 @@ public final class ThreadManager {
             try {
                 super.run();
             } catch (Throwable e) {
-                e.printStackTrace();
+                log.error(this.getName() + "线程执行异常", e);
             }
         }
 

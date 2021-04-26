@@ -3,12 +3,14 @@ package core.net;
 import core.module.Module;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -81,21 +83,37 @@ public class NetworkEngine implements Module {
     @Override
     public void destroy() {
         log.info("网络引擎销毁开始...");
-        bossGroup.shutdownGracefully();
-        workGroup.shutdownGracefully();
+        try {
+            bossGroup.shutdownGracefully().sync();
+            workGroup.shutdownGracefully().sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            log.info("网络引擎销毁异常...");
+            return;
+        }
         log.info("网络引擎销毁完成...");
     }
 
-    private static class NetworkEngineChannelHandler extends SimpleChannelInboundHandler<ByteBuf> {
+    @ChannelHandler.Sharable
+    private static class NetworkEngineChannelHandler extends ChannelInboundHandlerAdapter {
 
         @Override
-        public void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-            ctx.write("服务器接收到消息:" + msg.toString(CharsetUtil.UTF_8));
+        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+            String str = "服务器接收到消息:" + ((ByteBuf) msg).toString(CharsetUtil.UTF_8);
+            System.out.println(str);
+            ctx.write(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+        }
+
+        @Override
+        public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);
+//                    .addListener(ChannelFutureListener.CLOSE);
         }
 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
             cause.printStackTrace();
+            ctx.close();
         }
     }
 }

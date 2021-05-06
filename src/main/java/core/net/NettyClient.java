@@ -65,7 +65,7 @@ public class NettyClient {
 
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
-            ctx.writeAndFlush(Unpooled.copiedBuffer("netty rocks!", CharsetUtil.UTF_8));
+            ctx.writeAndFlush(Unpooled.copiedBuffer("hello server!", CharsetUtil.UTF_8));
         }
 
         @Override

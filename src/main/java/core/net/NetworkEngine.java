@@ -4,19 +4,16 @@ import core.module.Module;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 网络引擎
@@ -61,12 +58,36 @@ public class NetworkEngine implements Module {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast(new NetworkEngineChannelHandler());
+                        ChannelPipeline pipeline = socketChannel.pipeline();
+                        channelInboundHandlers().forEach(pipeline::addLast);
+                        channelOutboundHandlers().forEach(pipeline::addLast);
                     }
                 })
                 .option(ChannelOption.SO_BACKLOG, 1024)
                 .option(ChannelOption.SO_KEEPALIVE, true);
         log.info("网络引擎配置初始化完成");
+    }
+
+    /**
+     * ChannelInboundHandlers 队列
+     *
+     * @return ChannelHandler列表
+     */
+    private List<ChannelInboundHandler> channelInboundHandlers() {
+        List<ChannelInboundHandler> channelHandlers = new ArrayList<>();
+        channelHandlers.add(new NetworkEngineChannelHandler());
+        return channelHandlers;
+    }
+
+    /**
+     * ChannelInboundHandlers 队列
+     *
+     * @return ChannelHandler列表
+     */
+    private List<ChannelOutboundHandler> channelOutboundHandlers() {
+        List<ChannelOutboundHandler> channelHandlers = new ArrayList<>();
+        channelHandlers.add(new EnCoderChannelHandler());
+        return channelHandlers;
     }
 
     @Override
@@ -95,13 +116,23 @@ public class NetworkEngine implements Module {
     }
 
     @ChannelHandler.Sharable
+    private static class EnCoderChannelHandler extends ChannelOutboundHandlerAdapter {
+
+        @Override
+        public void read(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("开始编码");
+            super.read(ctx);
+        }
+    }
+
+    @ChannelHandler.Sharable
     private static class NetworkEngineChannelHandler extends ChannelInboundHandlerAdapter {
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             String str = "服务器接收到消息:" + ((ByteBuf) msg).toString(CharsetUtil.UTF_8);
             System.out.println(str);
-            ctx.write(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+            ctx.write(Unpooled.copiedBuffer("hi, client!", CharsetUtil.UTF_8));
         }
 
         @Override

@@ -20,10 +20,10 @@ public class StringUtils {
     }
 
     public static boolean isBlank(String string) {
-        return false;
+        return string == null || string.trim().isEmpty();
     }
 
     public static boolean isNotBlank(String string) {
-        return false;
+        return !isBlank(string);
     }
 }

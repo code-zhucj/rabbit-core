@@ -7,7 +7,6 @@ import core.util.CollectionUtils;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
@@ -32,6 +31,7 @@ public final class WorkerQueueThreadPoolExecutor extends ThreadPoolExecutor impl
 
     private Thread shutdown;
 
+    //TODO key可能需要设置为分布式id以保证唯一
     private Map<Object, ThreadTask> usersTasks;
 
     private CheckTask checkTask;
@@ -44,7 +44,7 @@ public final class WorkerQueueThreadPoolExecutor extends ThreadPoolExecutor impl
     @Override
     public void init() {
         checkTask = new CheckTask();
-        usersTasks = new ConcurrentHashMap<>((int) (maxUser / 0.75F) + 1);
+        usersTasks = CollectionUtils.newConcurrentHashMap(maxUser);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package core.module;
 
 import core.config.Configurator;
-import core.net.NettyClient;
 import core.net.NetworkEngine;
 
 /**
@@ -16,12 +15,6 @@ public class ModuleActuator {
         // 网络引擎
         new Configurator().start();
         NetworkEngine.getInstance().start();
-        NettyClient client = new NettyClient();
-        try {
-            client.start();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
 }

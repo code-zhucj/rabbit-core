@@ -3,6 +3,7 @@ package core.util;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @description: 集合工具类
@@ -11,7 +12,9 @@ import java.util.Map;
  */
 public class CollectionUtils {
 
-    private static float DEFAULT_LOAD_FACTOR = 0.75f;
+    private static final float DEFAULT_LOAD_FACTOR = 0.75F;
+
+    private static final float MAP_DEFAULT_SIZE = 16;
 
     public static <T> boolean isEmpty(Collection<T> collection) {
         return collection == null || collection.isEmpty();
@@ -29,7 +32,19 @@ public class CollectionUtils {
         return !isEmpty(map);
     }
 
+    public static <K, V> HashMap<K, V> newHashMap() {
+        return new HashMap<>((int) (MAP_DEFAULT_SIZE / DEFAULT_LOAD_FACTOR) + 1);
+    }
+
     public static <K, V> HashMap<K, V> newHashMap(int size) {
         return new HashMap<>((int) (size / DEFAULT_LOAD_FACTOR) + 1);
+    }
+
+    public static <K, V> ConcurrentHashMap<K, V> newConcurrentHashMap() {
+        return new ConcurrentHashMap<>((int) (MAP_DEFAULT_SIZE / DEFAULT_LOAD_FACTOR) + 1);
+    }
+
+    public static <K, V> ConcurrentHashMap<K, V> newConcurrentHashMap(int size) {
+        return new ConcurrentHashMap<>((int) (size / DEFAULT_LOAD_FACTOR) + 1);
     }
 }

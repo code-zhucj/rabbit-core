@@ -61,6 +61,7 @@ public class NetworkEngine implements Module {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        socketChannel.pipeline().addLast(NetConnectionManager.getConnectionManager());
                         socketChannel.pipeline().addLast(new NetworkEngineChannelHandler());
                     }
                 })
@@ -99,9 +100,9 @@ public class NetworkEngine implements Module {
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            String str = "服务器接收到消息:" + ((ByteBuf) msg).toString(CharsetUtil.UTF_8);
-            System.out.println(str);
-            ctx.write(Unpooled.copiedBuffer(str, CharsetUtil.UTF_8));
+            String read = ((ByteBuf) msg).toString(CharsetUtil.UTF_8);
+            System.out.println("服务器：" + read);
+            NetConnectionManager.getConnectionManager().writeAll(read);
         }
 
         @Override

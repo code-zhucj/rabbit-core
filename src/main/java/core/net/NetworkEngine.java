@@ -61,6 +61,9 @@ public class NetworkEngine implements Module {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        ChannelPipeline pipeline = socketChannel.pipeline();
+                        channelInboundHandlers().forEach(pipeline::addLast);
+                        channelOutboundHandlers().forEach(pipeline::addLast);
                         socketChannel.pipeline().addLast(NetConnectionManager.getConnectionManager());
                         socketChannel.pipeline().addLast(new NetworkEngineChannelHandler());
                     }
@@ -68,6 +71,28 @@ public class NetworkEngine implements Module {
                 .option(ChannelOption.SO_BACKLOG, 1024)
                 .option(ChannelOption.SO_KEEPALIVE, true);
         log.info("网络引擎配置初始化完成");
+    }
+
+    /**
+     * ChannelInboundHandlers 队列
+     *
+     * @return ChannelHandler列表
+     */
+    private List<ChannelInboundHandler> channelInboundHandlers() {
+        List<ChannelInboundHandler> channelHandlers = new ArrayList<>();
+        channelHandlers.add(new NetworkEngineChannelHandler());
+        return channelHandlers;
+    }
+
+    /**
+     * ChannelInboundHandlers 队列
+     *
+     * @return ChannelHandler列表
+     */
+    private List<ChannelOutboundHandler> channelOutboundHandlers() {
+        List<ChannelOutboundHandler> channelHandlers = new ArrayList<>();
+        channelHandlers.add(new EnCoderChannelHandler());
+        return channelHandlers;
     }
 
     @Override
@@ -93,6 +118,16 @@ public class NetworkEngine implements Module {
             return;
         }
         log.info("网络引擎销毁完成...");
+    }
+
+    @ChannelHandler.Sharable
+    private static class EnCoderChannelHandler extends ChannelOutboundHandlerAdapter {
+
+        @Override
+        public void read(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("开始编码");
+            super.read(ctx);
+        }
     }
 
     @ChannelHandler.Sharable

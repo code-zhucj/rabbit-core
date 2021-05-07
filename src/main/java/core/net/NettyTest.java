@@ -15,13 +15,6 @@ import java.io.FileNotFoundException;
 public class NettyTest {
 
     public static void main(String[] args) throws FileNotFoundException {
-        File file = new File("properties/log4j2.xml");
-        ConfigurationSource source = new ConfigurationSource(new FileInputStream(file), file);
-        Configurator.initialize(null, source);
-        Logger logger = LogManager.getLogger(NettyTest.class);
-        logger.debug("debug");
-        logger.info("info");
-        logger.warn("warn");
-        logger.error("error");
+
     }
 }

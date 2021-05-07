@@ -30,7 +30,7 @@ public class NetConnectionManager extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         connections.put(unique.incrementAndGet(), ctx);
-        System.out.println(String.format("id: %s 已成功建立连接", unique.get()));
+        System.out.printf("id: %s 已成功建立连接%n", unique.get());
     }
 
     public void write(int id, String object) {

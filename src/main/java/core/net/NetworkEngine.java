@@ -1,6 +1,9 @@
 package core.net;
 
 import core.module.Module;
+import core.net.coder.Decoder;
+import core.net.coder.Encoder;
+import core.view.ViewRequestForwarder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -71,8 +74,6 @@ public class NetworkEngine implements Module {
                         ChannelPipeline pipeline = socketChannel.pipeline();
                         channelInboundHandlers().forEach(pipeline::addLast);
                         channelOutboundHandlers().forEach(pipeline::addLast);
-                        socketChannel.pipeline().addLast(NetConnectionManager.getConnectionManager());
-                        socketChannel.pipeline().addLast(new NetworkEngineChannelHandler());
                     }
                 })
                 .option(ChannelOption.SO_BACKLOG, 1024)
@@ -87,7 +88,9 @@ public class NetworkEngine implements Module {
      */
     private List<ChannelInboundHandler> channelInboundHandlers() {
         List<ChannelInboundHandler> channelHandlers = new ArrayList<>();
-        channelHandlers.add(new NetworkEngineChannelHandler());
+        channelHandlers.add(NetConnectionManager.getConnectionManager());
+        channelHandlers.add(new Decoder());
+        channelHandlers.add(new ViewRequestForwarder());
         return channelHandlers;
     }
 
@@ -98,7 +101,7 @@ public class NetworkEngine implements Module {
      */
     private List<ChannelOutboundHandler> channelOutboundHandlers() {
         List<ChannelOutboundHandler> channelHandlers = new ArrayList<>();
-        channelHandlers.add(new EnCoderChannelHandler());
+        channelHandlers.add(new Encoder());
         return channelHandlers;
     }
 
@@ -127,15 +130,6 @@ public class NetworkEngine implements Module {
         log.info("网络引擎销毁完成...");
     }
 
-    @ChannelHandler.Sharable
-    private static class EnCoderChannelHandler extends ChannelOutboundHandlerAdapter {
-
-        @Override
-        public void read(ChannelHandlerContext ctx) throws Exception {
-            System.out.println("开始编码");
-            super.read(ctx);
-        }
-    }
 
     @ChannelHandler.Sharable
     private static class NetworkEngineChannelHandler extends ChannelInboundHandlerAdapter {

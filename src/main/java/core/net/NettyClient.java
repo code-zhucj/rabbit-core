@@ -1,6 +1,7 @@
 package core.net;
 
 
+import core.thread.ThreadManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -8,6 +9,8 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -18,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
+import java.util.Scanner;
 
 /**
  * 本类用于测试客户端与服务器连接
@@ -110,7 +114,7 @@ public class NettyClient {
             Scanner scanner = new Scanner(System.in);
             while (true) {
                 if (scanner.hasNext()) {
-                    String input = scanner.findInLine("/n");
+                    String input = scanner.next();
                     ctx.writeAndFlush(Unpooled.copiedBuffer(input, CharsetUtil.UTF_8));
                 }
             }

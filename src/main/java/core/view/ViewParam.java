@@ -5,5 +5,5 @@ package core.view;
  * @author: zhuchuanji
  * @create: 2021-05-07 20:54
  */
-public interface ViewCoderParam {
+public interface ViewParam {
 }

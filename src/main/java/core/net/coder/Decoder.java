@@ -1,6 +1,6 @@
 package core.net.coder;
 
-import core.view.ViewCoderParam;
+import core.view.ViewContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,11 +19,6 @@ public class Decoder extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("将数据开始解码");
         System.out.println(((ByteBuf) msg).toString(CharsetUtil.UTF_8));
-        super.channelRead(ctx, new ViewCoderParam() {
-            @Override
-            public int hashCode() {
-                return super.hashCode();
-            }
-        });
+        super.channelRead(ctx, new ViewContext());
     }
 }

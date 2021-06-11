@@ -1,19 +1,50 @@
 package core.view;
 
-import core.exception.ViewException;
+import core.config.ConfigManager;
 import core.util.CollectionUtils;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+
 
 public class ViewManager {
 
-    private static Map<Long, View> allView = CollectionUtils.newConcurrentHashMap();
+    private static Map<Long, ViewCache> viewIndexes = CollectionUtils.newConcurrentHashMap();
+    private static Map<Long, ViewHandler> viewHandlerMap = CollectionUtils.newHashMap();
 
-    public static View getViewById(long id) {
-        View view = allView.get(id);
-        if(view == null){
-            throw new ViewException("视图不存在");
+    public static ViewTask getViewTaskById(long uid, long vid) {
+        ViewCache viewCache = viewIndexes.get(uid);
+        return new ViewTask(viewHandlerMap.get(vid));
+    }
+
+
+    private static class ViewCache {
+        Map<Long, ViewData> views = new LinkedHashMap<>();
+
+        private ViewData getViewData(long vid) {
+            return views.get(vid);
         }
-        return allView.get(id);
+    }
+
+    private static class ViewTask implements Runnable {
+
+        private ViewHandler viewHandler;
+
+        public ViewTask(ViewHandler viewHandler) {
+            this.viewHandler = viewHandler;
+        }
+
+        @Override
+        public void run() {
+            // todo
+            try {
+                this.viewHandler.process();
+            } catch (Throwable throwable) {
+                this.viewHandler.throwable(throwable);
+                if (ConfigManager.getGlobalConfig().isOpenAlarm()) {
+                    ConfigManager.getGlobalConfig().getAlarm().process();
+                }
+            }
+        }
     }
 }

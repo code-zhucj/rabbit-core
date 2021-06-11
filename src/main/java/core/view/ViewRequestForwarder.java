@@ -1,10 +1,13 @@
 package core.view;
 
+import core.constants.Constants;
 import core.thread.ThreadManager;
 import core.thread.WorkerQueueThreadPoolExecutor;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.Attribute;
+import io.netty.util.AttributeKey;
 import io.netty.util.CharsetUtil;
 
 /**
@@ -20,7 +23,8 @@ public class ViewRequestForwarder extends ChannelInboundHandlerAdapter {
         ViewContext vc = (ViewContext) msg;
         ctx.writeAndFlush(Unpooled.copiedBuffer("服务器已收到请求，正在处理", CharsetUtil.UTF_8));
         WorkerQueueThreadPoolExecutor workerQueueThreadPool = ThreadManager.getInstance().getWorkerQueueThreadPool();
-        workerQueueThreadPool.commit(vc.getClientId(), ViewManager.getViewById(vc.getTargetViewId()));
+        Attribute<Long> attr = ctx.channel().attr(AttributeKey.valueOf(Constants.CHANNEL_ID));
+        workerQueueThreadPool.commit(vc.getClientId(), ViewManager.getViewTaskById(attr.get(), vc.getTargetViewId()));
     }
 
 }

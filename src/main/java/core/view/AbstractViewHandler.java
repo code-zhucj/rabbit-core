@@ -5,29 +5,12 @@ package core.view;
  *
  * @author zhuchuanji
  */
-public abstract class AbstractViewHandler<P extends ViewParam, D extends ViewData> implements View {
+public abstract class AbstractViewHandler<P extends ViewParam, D extends ViewData> implements Runnable {
 
     @Override
     public void run() {
-        P viewParam = viewParam();
-        D viewData = viewData();
+
     }
 
-    @Override
-    public long getViewId() {
-        return 0;
-    }
 
-    @Override
-    public abstract boolean process();
-
-    @Override
-    final public <D extends ViewData> D viewData() {
-        return null;
-    }
-
-    @Override
-    final public <P extends ViewParam> P viewParam() {
-        return null;
-    }
 }

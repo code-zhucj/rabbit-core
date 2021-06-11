@@ -1,14 +1,12 @@
 package view;
 
 
-import core.view.AbstractViewHandler;
+import core.view.ViewHandler;
 
-public class ChatRoomViewHandler extends AbstractViewHandler<ChatRoomView, ChatRoomView> {
+public class ChatRoomViewHandler implements ViewHandler {
+
     @Override
-    public boolean process() {
-        ChatRoomView viewParam = viewParam();
-        ChatRoomView viewData = viewData();
-        viewData.chat = viewParam.chat;
-        return true;
+    public void process() {
+
     }
 }

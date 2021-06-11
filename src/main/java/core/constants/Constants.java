@@ -8,4 +8,6 @@ package core.constants;
 public class Constants {
 
     public static final String UTF8 = "utf-8";
+
+    public static final String CHANNEL_ID = "channelId";
 }

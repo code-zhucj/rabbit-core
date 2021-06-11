@@ -6,13 +6,13 @@ package core.view;
  * @author zhuchuanji
  * @date 2021/3/2
  */
-public interface View extends Runnable {
+public interface View {
 
+    /**
+     * view unique id
+     *
+     * @return viewId
+     */
     long getViewId();
 
-    boolean process();
-
-    <D extends ViewData> D viewData();
-
-    <P extends ViewParam> P viewParam();
 }

@@ -1,20 +1,25 @@
 package view;
 
 import core.view.ViewData;
-import core.view.ViewParam;
+import core.view.ViewHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatRoomView implements ViewData, ViewParam {
+public class ChatRoomView extends ViewData implements ViewHandler {
 
-    public List<String> chat = new ArrayList<>();
+    private List<String> chat = new ArrayList<>();
 
-    public List<String> getChat(){
-        return chat;
+    public List<String> getChat() {
+        return super.collector.get("chat");
     }
 
-    public void add(String msg){
-        chat.add(msg);
+    public void setChat(List<String> chat) {
+        this.chat = chat;
+    }
+
+    @Override
+    public void process() {
+
     }
 }
